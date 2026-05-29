@@ -1,0 +1,13 @@
+cr:
+  create: true
+  namespace: istio-system
+  spec:
+    auth:
+      strategy: anonymous
+    external_services:
+      grafana:
+        enabled: true
+        internal_url: http://prometheus-grafana.monitoring:80
+      prometheus:
+        health_check_url: http://prometheus-kube-prometheus-prometheus.monitoring:9090/-/ready
+        url: http://prometheus-kube-prometheus-prometheus.monitoring:9090

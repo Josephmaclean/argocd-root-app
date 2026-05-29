@@ -1,0 +1,43 @@
+jaeger:
+  replicas: 1
+  service:
+    annotations: {}
+
+userconfig:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+  processors:
+    batch: {}
+
+  extensions:
+    healthcheckv2:
+      use_v2: true
+      http:
+        endpoint: 0.0.0.0:13133
+
+    jaeger_query:
+      storage:
+        traces: memory_store
+
+    jaeger_storage:
+      backends:
+        memory_store:
+          memory: {}
+
+  service:
+    extensions: [healthcheckv2, jaeger_query, jaeger_storage]
+    pipelines:
+      traces:
+        receivers: [otlp]
+        processors: [batch]
+        exporters: [jaeger_storage_exporter]
+
+  exporters:
+    jaeger_storage_exporter:
+      trace_storage: memory_store
