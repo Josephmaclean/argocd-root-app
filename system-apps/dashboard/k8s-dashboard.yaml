@@ -13,7 +13,7 @@ spec:
       targetRevision: 0.41.0
       helm:
         releaseName: headlamp
-    - repoURL: https://github.com/Josephmaclean/argocd-example-apps.git
+    - repoURL: https://github.com/Josephmaclean/argocd-root-app
       targetRevision: HEAD
       path: resources/dashboard
   destination:

@@ -15,7 +15,7 @@ spec:
         releaseName: istiod
         valueFiles:
           - $values/argo-values/istiod-values.yaml
-    - repoURL: https://github.com/Josephmaclean/argocd-example-apps.git
+    - repoURL: https://github.com/Josephmaclean/argocd-root-app
       targetRevision: HEAD
       ref: values
   destination:

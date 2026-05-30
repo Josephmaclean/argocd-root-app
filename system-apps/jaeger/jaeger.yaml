@@ -18,7 +18,7 @@ spec:
         releaseName: jaeger
         valueFiles:
           - $values/argo-values/jaeger-values.yaml
-    - repoURL: https://github.com/Josephmaclean/argocd-example-apps.git
+    - repoURL: https://github.com/Josephmaclean/argocd-root-app
       targetRevision: HEAD
       ref: values
   syncPolicy:
