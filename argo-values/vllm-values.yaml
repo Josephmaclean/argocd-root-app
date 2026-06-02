@@ -1,0 +1,45 @@
+servingEngineSpec:
+  labels:
+    environment: ml
+    release: vllm
+  imagePullPolicy: IfNotPresent
+  runtimeClassName: ""
+  tolerations:
+    - key: workload
+      operator: Equal
+      value: ml
+      effect: NoSchedule
+  modelSpec:
+    - name: opt125m
+      enabled: true
+      repository: vllm/vllm-openai
+      tag: v0.21.0-cu129-ubuntu2404
+      modelURL: facebook/opt-125m
+      replicaCount: 1
+      requestCPU: 6
+      requestMemory: "16Gi"
+      requestGPU: 1
+      requestGPUType: nvidia.com/gpu
+      pvcStorage: "10Gi"
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: gpu
+              operator: In
+              values:
+                - "true"
+
+routerSpec:
+  labels:
+    environment: ml
+    release: vllm-router
+  imagePullPolicy: IfNotPresent
+  tag: v0.1.11
+  serviceType: ClusterIP
+  serviceMonitor:
+    enabled: true
+
+grafanaDashboards:
+  enabled: true
+
+kube-prometheus-stack:
+  enabled: false

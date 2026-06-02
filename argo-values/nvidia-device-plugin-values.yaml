@@ -1,0 +1,15 @@
+affinity: null
+
+nodeSelector:
+  gpu: "true"
+
+tolerations:
+  - key: workload
+    operator: Equal
+    value: ml
+    effect: NoSchedule
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
+  - key: CriticalAddonsOnly
+    operator: Exists
