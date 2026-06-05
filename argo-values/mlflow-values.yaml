@@ -1,0 +1,10 @@
+backendStore:
+  databaseMigration: true
+  databaseConnectionCheck: true
+  postgres:
+    enabled: true
+    host: postgresql.mlflow.svc.cluster.local
+    port: 5432
+    database: mlflow
+    user: postgres
+    password: mlflow-temp-postgres-password

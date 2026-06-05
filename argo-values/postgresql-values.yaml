@@ -1,0 +1,11 @@
+architecture: standalone
+fullnameOverride: postgresql
+
+auth:
+  database: mlflow
+  postgresPassword: mlflow-temp-postgres-password
+
+primary:
+  persistence:
+    enabled: true
+    size: 10Gi

@@ -22,6 +22,7 @@ The root application syncs every child `Application` under `system-apps/`. Child
 Child applications use Argo CD sync waves for basic dependency ordering:
 
 - wave `0`: Argo CD exposure, EBS gp3 StorageClass, Istio base, Jaeger, Kyverno, Metrics Server, NVIDIA Device Plugin, Prometheus stack
+- wave `5`: PostgreSQL
 - wave `10`: Istiod, dashboard, MLflow, vLLM
 - wave `20`: Istio gateway
 - wave `30`: Kiali
