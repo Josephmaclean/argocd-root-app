@@ -20,7 +20,7 @@ spec:
       ref: values
   destination:
     server: https://kubernetes.default.svc
-    namespace: mlflow
+    namespace: postgres
   syncPolicy:
     automated:
       prune: true

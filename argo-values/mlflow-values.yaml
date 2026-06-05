@@ -3,7 +3,7 @@ backendStore:
   databaseConnectionCheck: true
   postgres:
     enabled: true
-    host: postgresql.mlflow.svc.cluster.local
+    host: postgresql.postgres.svc.cluster.local
     port: 5432
     database: mlflow
     user: postgres
