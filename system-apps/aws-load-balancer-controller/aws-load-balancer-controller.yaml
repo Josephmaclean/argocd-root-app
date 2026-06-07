@@ -1,29 +1,26 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: external-secrets
+  name: aws-load-balancer-controller
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 spec:
   project: default
   sources:
-    - repoURL: https://charts.external-secrets.io
-      chart: external-secrets
-      targetRevision: 2.5.0
+    - repoURL: https://aws.github.io/eks-charts
+      chart: aws-load-balancer-controller
+      targetRevision: 3.4.0
       helm:
-        releaseName: external-secrets
-        values: |
-          installCRDs: false
-          fullnameOverride: external-secrets
-          serviceMonitor:
-            enabled: false
+        releaseName: aws-load-balancer-controller
+        valueFiles:
+          - $values/argo-values/aws-load-balancer-controller-values.yaml
     - repoURL: https://github.com/Josephmaclean/argocd-root-app
       targetRevision: HEAD
       ref: values
   destination:
     server: https://kubernetes.default.svc
-    namespace: external-secrets
+    namespace: kube-system
   syncPolicy:
     automated:
       prune: true

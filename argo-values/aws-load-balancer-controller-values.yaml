@@ -1,0 +1,10 @@
+clusterName: private-eks
+region: eu-west-2
+
+serviceAccount:
+  create: true
+  name: aws-load-balancer-controller
+
+controllerConfig:
+  featureGates:
+    ALBGatewayAPI: true
