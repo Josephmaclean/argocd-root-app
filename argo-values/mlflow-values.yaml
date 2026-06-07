@@ -19,4 +19,4 @@ serviceAccount:
 artifactRoot:
   s3:
     enabled: true
-    bucket: arn:aws:s3:::private-eks-mlflow-artifacts
+    bucket: private-eks-mlflow-artifacts
