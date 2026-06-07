@@ -8,3 +8,15 @@ backendStore:
     database: mlflow
     user: postgres
     password: mlflow-temp-postgres-password
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::<account-id>:role/private-eks-mlflow-role
+  name: "mlflow-sa"
+
+artifactRoot:
+  s3:
+    enabled: true
+    bucket: s3://private-eks-mlflow-artifacts
