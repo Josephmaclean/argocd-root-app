@@ -1,5 +1,6 @@
 clusterName: private-eks
 region: eu-west-2
+vpcId: vpc-0f0e6bbac0910aa6b
 
 serviceAccount:
   create: true
