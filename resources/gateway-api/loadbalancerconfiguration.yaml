@@ -1,0 +1,10 @@
+apiVersion: gateway.k8s.aws/v1beta1
+kind: LoadBalancerConfiguration
+metadata:
+  name: aws-alb-public
+  namespace: cluster-ingress
+spec:
+  scheme: internet-facing
+  loadBalancerSubnets:
+    - identifier: subnet-0f970e9fea154e1d5
+    - identifier: subnet-0ce02e557c4e63d52

@@ -24,5 +24,5 @@ Child applications use Argo CD sync waves for basic dependency ordering:
 - wave `0`: Argo CD exposure, EBS gp3 StorageClass, External Secrets, Istio base, Jaeger, Kyverno, Metrics Server, NVIDIA Device Plugin, Prometheus stack
 - wave `5`: PostgreSQL in `postgres`
 - wave `10`: Istiod, dashboard, MLflow, vLLM
-- wave `20`: Istio gateway
+- wave `20`: Kubernetes Gateway API, Istio gateway
 - wave `30`: Kiali
