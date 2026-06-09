@@ -35,4 +35,4 @@ log:
 
 image:  
   repository: joeymaclean/mlflow-genai
-  tag: "0.1"
+  tag: "0.2"
