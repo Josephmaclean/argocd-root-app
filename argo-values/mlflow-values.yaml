@@ -30,9 +30,9 @@ service:
   containerPortName: mlflow
 
 log:
-  enabled: true
-  level: debug
+  enabled: false
+  # level: debug
 
 
 extraArgs:
-  gunicornOpts: ""
+  uvicorn-opts: "--log-level debug"
