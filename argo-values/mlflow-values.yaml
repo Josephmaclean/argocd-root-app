@@ -20,3 +20,43 @@ artifactRoot:
   s3:
     enabled: true
     bucket: private-eks-mlflow-artifacts
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 5000
+  name: http
+  containerPort: 5000
+  containerPortName: mlflow
+
+log:
+  enabled: true
+  level: debug
+
+
+# Temporary workaround to install mlflow[genai] dependencies until the chart supports it natively. 
+# 1. Create a temporary in-memory volume workspace
+extraVolumes:
+  - name: python-packages-volume
+    emptyDir: {}
+
+# 2. Mount that workspace into the main MLflow container
+extraVolumeMounts:
+  - name: python-packages-volume
+    mountPath: /shared-packages
+
+# 3. Tell the main container's Python engine to look inside our workspace
+extraEnvVars:
+  PYTHONPATH: "/shared-packages"
+
+# 4. Use an init container to download the dependencies into the workspace
+initContainers:
+  - name: install-gateway-dependencies
+    image: "ghcr.io/mlflow/mlflow:v3.13.0"
+    command: ["/bin/sh", "-c"]
+    args:
+      - |
+        pip install --no-cache-dir --target=/shared-packages "mlflow[genai]" openai
+    volumeMounts:
+      - name: python-packages-volume
+        mountPath: /shared-packages

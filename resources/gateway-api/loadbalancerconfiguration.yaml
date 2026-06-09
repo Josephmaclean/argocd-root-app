@@ -5,6 +5,8 @@ metadata:
   namespace: cluster-ingress
 spec:
   scheme: internet-facing
+  defaultTargetGroupConfiguration:
+    name: aws-alb-public-default-tg
   loadBalancerSubnets:
     - identifier: subnet-0f970e9fea154e1d5
     - identifier: subnet-0ce02e557c4e63d52
