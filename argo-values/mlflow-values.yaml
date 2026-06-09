@@ -33,6 +33,6 @@ log:
   enabled: true
   level: debug
 
-image:  
-  repository: joeymaclean/mlflow-genai
-  tag: "0.3"
+
+extraArgs:
+  gunicornOpts: ""
