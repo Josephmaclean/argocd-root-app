@@ -1,0 +1,13 @@
+postgresql:
+  enabled: false
+
+backstage:
+  extraEnvVars:
+    - name: POSTGRES_HOST
+      value: postgresql.postgres.svc.cluster.local
+    - name: POSTGRES_PORT
+      value: "5432"
+    - name: POSTGRES_USER
+      value: postgres
+    - name: POSTGRES_PASSWORD
+      value: mlflow-temp-postgres-password

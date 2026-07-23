@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: litellm
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  project: default
+  sources:
+    - repoURL: oci://ghcr.io/berriai/litellm/chart
+      chart: litellm
+      targetRevision: 1.89.2
+      helm:
+        releaseName: litellm
+        valueFiles:
+          - $values/argo-values/litellm-values.yaml
+    - repoURL: https://github.com/Josephmaclean/argocd-root-app
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: litellm
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true

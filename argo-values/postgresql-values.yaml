@@ -9,3 +9,7 @@ primary:
   persistence:
     enabled: true
     size: 10Gi
+  initdb:
+    scripts:
+      create-litellm-db.sql: |
+        SELECT 'CREATE DATABASE litellm' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'litellm')\gexec
