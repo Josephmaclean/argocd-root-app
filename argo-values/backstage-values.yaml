@@ -32,7 +32,7 @@ backstage:
           token: ${github_token}
     app:
       title: Bigspark Backstage
-    backend:
-      baseUrl: http://backstage.backstage.svc.cluster.local:7007
-      listen:
-        port: 7007
+    # backend:
+    #   baseUrl: http://backstage.backstage.svc.cluster.local:7007
+    #   listen:
+    #     port: 7007
