@@ -1,43 +1,43 @@
-postgresql:
-  enabled: false
+# postgresql:
+#   enabled: false
 
-backstage:
-  extraEnvVarsSecrets:
-    - github-secrets
+# backstage:
+#   extraEnvVarsSecrets:
+#     - github-secrets
 
-  extraEnvVars:
-    # - name: APP_CONFIG_app_baseUrl
-    #   value: http://localhost:7007
-    # - name: APP_CONFIG_backend_baseUrl
-    #   value: http://localhost:7007
-    - name: POSTGRES_HOST
-      value: postgresql.postgres.svc.cluster.local
-    - name: POSTGRES_PORT
-      value: "5432"
-    - name: POSTGRES_USER
-      value: postgres
-    - name: POSTGRES_PASSWORD
-      value: mlflow-temp-postgres-password
+#   extraEnvVars:
+#     # - name: APP_CONFIG_app_baseUrl
+#     #   value: http://localhost:7007
+#     # - name: APP_CONFIG_backend_baseUrl
+#     #   value: http://localhost:7007
+#     - name: POSTGRES_HOST
+#       value: postgresql.postgres.svc.cluster.local
+#     - name: POSTGRES_PORT
+#       value: "5432"
+#     - name: POSTGRES_USER
+#       value: postgres
+#     - name: POSTGRES_PASSWORD
+#       value: mlflow-temp-postgres-password
 
-  appConfig:
-    auth:
-      environment: development
-      providers:
-        github:
-          development:
-            clientId: ${github_auth_client_id}
-            clientSecret: ${github_auth_client_secret}
-            signIn:
-              resolvers:
-                - resolver: usernameMatchingUserEntityName
-    integrations:
-      github:
-        - host: github.com
-          token: ${github_token}
-    app:
-      title: Bigspark Backstage
-      baseUrl: http://localhost:7007
-    backend:
-      baseUrl: http://localhost:7007
-      listen:
-        port: 7007
+#   appConfig:
+#     auth:
+#       environment: development
+#       providers:
+#         github:
+#           development:
+#             clientId: ${github_auth_client_id}
+#             clientSecret: ${github_auth_client_secret}
+#             signIn:
+#               resolvers:
+#                 - resolver: usernameMatchingUserEntityName
+#     integrations:
+#       github:
+#         - host: github.com
+#           token: ${github_token}
+#     app:
+#       title: Bigspark Backstage
+#       baseUrl: http://localhost:7007
+#     backend:
+#       baseUrl: http://localhost:7007
+#       listen:
+#         port: 7007
