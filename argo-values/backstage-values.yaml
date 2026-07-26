@@ -2,9 +2,8 @@ postgresql:
   enabled: false
 
 backstage:
-  extraVolumes:
-    - secret: 
-        secretName: github-secrets
+  extraEnvVarsSecrets:
+    - github-secrets
 
   extraEnvVars:
     - name: POSTGRES_HOST
