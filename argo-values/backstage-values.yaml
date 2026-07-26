@@ -6,10 +6,10 @@ backstage:
     - github-secrets
 
   extraEnvVars:
-    - name: APP_CONFIG_app_baseUrl
-      value: http://localhost:7007
-    - name: APP_CONFIG_backend_baseUrl
-      value: http://localhost:7007
+    # - name: APP_CONFIG_app_baseUrl
+    #   value: http://localhost:7007
+    # - name: APP_CONFIG_backend_baseUrl
+    #   value: http://localhost:7007
     - name: POSTGRES_HOST
       value: postgresql.postgres.svc.cluster.local
     - name: POSTGRES_PORT
