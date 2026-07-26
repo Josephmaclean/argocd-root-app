@@ -2,6 +2,10 @@ postgresql:
   enabled: false
 
 backstage:
+  extraVolumes:
+    - secret: 
+        secretName: github-secrets
+
   extraEnvVars:
     - name: POSTGRES_HOST
       value: postgresql.postgres.svc.cluster.local
@@ -11,3 +15,25 @@ backstage:
       value: postgres
     - name: POSTGRES_PASSWORD
       value: mlflow-temp-postgres-password
+
+  appConfig:
+    auth:
+      environment: development
+      providers:
+        github:
+          development:
+            clientId: ${github_auth_client_id}
+            clientSecret: ${github_auth_client_secret}
+            signIn:
+              resolvers:
+                - resolver: usernameMatchingUserEntityName
+    integrations:
+      github:
+        - host: github.com
+          token: ${github_token}
+    app:
+      title: Bigspark Backstage
+    backend:
+      baseUrl: http://backstage.backstage.svc.cluster.local:7007
+      listen:
+        port: 7007
