@@ -1,0 +1,7 @@
+kserve:
+  controller:
+    deploymentMode: Standard
+    gateway:
+      # Keep model services internal until an ingress controller or Gateway is configured.
+      disableIngressCreation: true
+      disableIstioVirtualHost: true
