@@ -1,6 +1,9 @@
 kserve:
   # The existing kserve Application owns the config, issuer, and storage container.
   createSharedResources: false
+  
   llmisvc:
     # Install the inference-extension CRDs bundled with this controller version.
     createGIECRDs: true
+  llmisvcConfigs:
+    enabled: true
