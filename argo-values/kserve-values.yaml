@@ -5,16 +5,3 @@ kserve:
       # Keep model services internal until an ingress controller or Gateway is configured.
       disableIngressCreation: true
       disableIstioVirtualHost: true
-
-  # Storage-initializer (model download initContainer) resources.
-  # The default limit of 1Gi OOMKills large HuggingFace downloads because
-  # hf_transfer / xet high-performance buffering is memory-hungry. Raise the
-  # limit so gated/large LLM weights (e.g. 7B-8B, ~15GB) download reliably.
-  storage:
-    resources:
-      requests:
-        cpu: 100m
-        memory: 500Mi
-      limits:
-        cpu: "1"
-        memory: 6Gi

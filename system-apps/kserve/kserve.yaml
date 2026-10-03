@@ -21,6 +21,20 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: kserve
+  # The storage-initializer memory limit (storageInitializer.memoryLimit in the
+  # inferenceservice-config ConfigMap) is hardcoded to 1Gi by the kserve-resources
+  # chart and is NOT exposed as a Helm value. 1Gi OOMKills large HuggingFace
+  # downloads (hf_transfer/xet buffering) for LLMInferenceService, whose
+  # controller also ignores ClusterStorageContainer overrides (kserve#5480).
+  # We raise it to 6Gi out-of-band and tell Argo CD to stop reverting that one
+  # field so self-heal does not fight the change.
+  ignoreDifferences:
+    - group: ""
+      kind: ConfigMap
+      name: inferenceservice-config
+      namespace: kserve
+      jsonPointers:
+        - /data/storageInitializer
   syncPolicy:
     automated:
       prune: true
@@ -35,3 +49,4 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
       - SkipDryRunOnMissingResource=true
+      - RespectIgnoreDifferences=true
