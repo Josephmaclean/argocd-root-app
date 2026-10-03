@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kserve-llmisvc
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "15"
+spec:
+  project: default
+  sources:
+    - repoURL: ghcr.io/kserve/charts
+      chart: kserve-llmisvc-resources
+      targetRevision: v0.20.0
+      helm:
+        releaseName: kserve-llmisvc
+        valueFiles:
+          - $values/argo-values/kserve-llmisvc-values.yaml
+    - repoURL: https://github.com/Josephmaclean/argocd-root-app
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kserve
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 10
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - SkipDryRunOnMissingResource=true
