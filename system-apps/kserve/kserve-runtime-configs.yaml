@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kserve-runtime-configs
+  namespace: argocd
+  annotations:
+    # After the llmisvc controller (wave 15); the LLMInferenceServiceConfig CRD
+    # is installed by kserve-crds at wave 5.
+    argocd.argoproj.io/sync-wave: "16"
+spec:
+  project: default
+  sources:
+    - repoURL: ghcr.io/kserve/charts
+      chart: kserve-runtime-configs
+      targetRevision: v0.20.0
+      helm:
+        releaseName: kserve-runtime-configs
+        valueFiles:
+          - $values/argo-values/kserve-runtime-configs-values.yaml
+    - repoURL: https://github.com/Josephmaclean/argocd-root-app
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kserve
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 10
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - SkipDryRunOnMissingResource=true

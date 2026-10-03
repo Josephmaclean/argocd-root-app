@@ -5,5 +5,6 @@ kserve:
   llmisvc:
     # Install the inference-extension CRDs bundled with this controller version.
     createGIECRDs: true
-  llmisvcConfigs:
-    enabled: true
+  # NOTE: the well-known LLMInferenceServiceConfig presets (kserve-config-llm-*)
+  # are NOT part of this chart. They ship in the separate kserve-runtime-configs
+  # chart, installed by the kserve-runtime-configs Application.

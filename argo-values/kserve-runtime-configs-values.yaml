@@ -1,0 +1,11 @@
+kserve:
+  # Install the well-known LLMInferenceServiceConfig presets
+  # (kserve-config-llm-scheduler, -llm-template, -llm-router-route, etc.)
+  # auto-injected by the llmisvc controller based on the service spec shape.
+  llmisvcConfigs:
+    enabled: true
+
+  # Predictive ClusterServingRuntimes are owned by the kserve-resources
+  # Application; keep them disabled here to avoid duplicate owners.
+  servingruntime:
+    enabled: false
