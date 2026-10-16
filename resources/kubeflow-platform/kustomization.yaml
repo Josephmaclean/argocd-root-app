@@ -1,0 +1,96 @@
+# Trimmed Kubeflow Community Distribution overlay, pinned to tag 26.03.1.
+#
+# Goal: the Kubeflow Central Dashboard (unified UI) plus Pipelines, Trainer,
+# and Model Registry/Catalog, with the minimal platform (Istio + Dex +
+# OAuth2-Proxy + Kubeflow roles/namespaces) the dashboard requires.
+#
+# Deliberately EXCLUDED from the upstream `example` overlay:
+#   - common/cert-manager/base ....... reused from this repo's existing
+#                                       cert-manager Application (we only pull
+#                                       in the kubeflow cert-manager overlay
+#                                       below for the self-signing ClusterIssuer
+#                                       + NetworkPolicies).
+#   - common/knative ................. not needed; KServe here runs in Standard
+#                                       (non-Knative) mode and is managed by the
+#                                       existing `kserve` Applications.
+#   - applications/kserve ............ already installed by `system-apps/kserve`.
+#   - applications/katib ............. not requested.
+#   - applications/notebooks-v1 ...... not requested.
+#   - applications/spark ............. not requested.
+#   - applications/workspaces ........ pre-GA; not requested.
+#
+# All resources are fetched as remote kustomize bases at ?ref=26.03.1 so the
+# component versions stay coherent with a single tested distribution release.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+sortOptions:
+  order: legacy
+  legacySortOptions:
+    orderFirst:
+      - Namespace
+      - ResourceQuota
+      - StorageClass
+      - CustomResourceDefinition
+      - MutatingWebhookConfiguration
+      - ServiceAccount
+      - PodSecurityPolicy
+      - NetworkPolicy
+      - Role
+      - ClusterRole
+      - RoleBinding
+      - ClusterRoleBinding
+      - ConfigMap
+      - Secret
+      - Endpoints
+      - Service
+      - LimitRange
+      - PriorityClass
+      - PersistentVolume
+      - PersistentVolumeClaim
+      - Deployment
+      - StatefulSet
+      - CronJob
+      - PodDisruptionBudget
+    orderLast:
+      - ValidatingWebhookConfiguration
+
+resources:
+  # --- cert-manager (reuse existing install; add only the Kubeflow issuer +
+  #     NetworkPolicies the platform expects). The cert-manager controller
+  #     itself is NOT included here; it is provided by this repo's existing
+  #     cert-manager Application. ---
+  - https://github.com/kubeflow/manifests//common/cert-manager/overlays/kubeflow?ref=26.03.1
+
+  # --- Istio (service mesh + ingress gateway wired for oauth2-proxy auth) ---
+  - https://github.com/kubeflow/manifests//common/istio/istio-crds/base?ref=26.03.1
+  - https://github.com/kubeflow/manifests//common/istio/istio-namespace/base?ref=26.03.1
+  - https://github.com/kubeflow/manifests//common/istio/istio-install/overlays/oauth2-proxy?ref=26.03.1
+  - https://github.com/kubeflow/manifests//common/istio/cluster-local-gateway/base?ref=26.03.1
+  - https://github.com/kubeflow/manifests//common/istio/kubeflow-istio-resources/base?ref=26.03.1
+
+  # --- OAuth2-Proxy (m2m-dex-only works for all cluster types) ---
+  - https://github.com/kubeflow/manifests//common/oauth2-proxy/overlays/m2m-dex-only?ref=26.03.1
+
+  # --- Dex (OIDC identity provider; default demo user user@example.com) ---
+  - https://github.com/kubeflow/manifests//common/dex/overlays/oauth2-proxy?ref=26.03.1
+
+  # --- Kubeflow namespace, aggregated roles, and shared Istio resources ---
+  - https://github.com/kubeflow/manifests//common/kubeflow-namespace/base?ref=26.03.1
+  - https://github.com/kubeflow/manifests//common/kubeflow-roles/base?ref=26.03.1
+
+  # --- Central Dashboard (the unified Kubeflow UI) ---
+  - https://github.com/kubeflow/manifests//applications/dashboard/overlays/istio?ref=26.03.1
+
+  # --- Kubeflow Pipelines (includes the Pipelines UI; SeaweedFS S3 storage) ---
+  - https://github.com/kubeflow/manifests//applications/pipeline/overlays?ref=26.03.1
+
+  # --- Trainer (Training Operator v2) ---
+  - https://github.com/kubeflow/manifests//applications/trainer/overlays?ref=26.03.1
+
+  # --- Hub: Model Registry (per-tenant) + Model Catalog (cluster singleton) ---
+  - https://github.com/kubeflow/manifests//applications/hub/overlays/model-registry?ref=26.03.1
+  - https://github.com/kubeflow/manifests//applications/hub/overlays/model-catalog?ref=26.03.1
+
+  # --- Default user profile namespace (kubeflow-user-example-com) ---
+  - https://github.com/kubeflow/manifests//common/user-namespace/base?ref=26.03.1

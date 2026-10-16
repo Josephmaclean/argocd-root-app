@@ -24,7 +24,7 @@ Child applications use Argo CD sync waves for basic dependency ordering:
 
 - wave `0`: Argo CD exposure, AWS Load Balancer Controller, cert-manager, EBS gp3 StorageClass, External Secrets, Istio base, Jaeger, Kyverno, Metrics Server, NVIDIA Device Plugin, Prometheus stack
 - wave `5`: KServe CRDs, PostgreSQL in `postgres`
-- wave `10`: Istiod, dashboard, KServe, MLflow, vLLM
+- wave `10`: Istiod, dashboard, KServe, MLflow, vLLM, Kubeflow platform (Central Dashboard, Pipelines, Trainer, Model Registry)
 - wave `15`: Bifrost, KServe LLMInferenceService controller, LiteLLM Operator
 - wave `20`: Kubernetes Gateway API, Istio gateway
 - wave `30`: Kiali
@@ -77,4 +77,85 @@ kubectl get pods -n kserve
 kubectl get crd inferenceservices.serving.kserve.io
 kubectl get crd llminferenceservices.serving.kserve.io llminferenceserviceconfigs.serving.kserve.io
 kubectl rollout status deployment/llmisvc-controller-manager -n kserve
+```
+
+## Kubeflow
+
+`system-apps/kubeflow-platform/` installs the **Kubeflow Community
+Distribution**, pinned to tag `26.03.1`, as a single Argo CD Application. This
+is the full platform (not standalone components) so that the unified **Kubeflow
+Central Dashboard** UI is available.
+
+The Application's source is the in-repo kustomization
+`resources/kubeflow-platform/`, which references the upstream
+`kubeflow/manifests` paths as remote kustomize bases pinned to `?ref=26.03.1`.
+Argo CD renders the kustomization and fetches the remote bases on sync. Pinning
+every component to one distribution release keeps versions coherent.
+
+### What is installed
+
+Platform (required by the dashboard):
+
+- **Istio** service mesh + ingress gateway (wired for OAuth2-Proxy auth)
+- **Dex** OIDC identity provider and **OAuth2-Proxy** (`m2m-dex-only`)
+- Kubeflow namespace, aggregated roles, shared Istio resources, and a default
+  user profile namespace (`kubeflow-user-example-com`)
+
+Applications:
+
+- **Central Dashboard** — the unified Kubeflow UI
+- **Pipelines** — includes the Pipelines web UI (`ml-pipeline-ui`); uses
+  SeaweedFS for S3-compatible artifact storage
+- **Trainer** (Training Operator v2)
+- **Model Registry** (per-tenant) and **Model Catalog** (cluster singleton),
+  with the Model Registry UI surfaced inside the Central Dashboard
+
+### Reused and excluded components
+
+- **cert-manager is reused** from this repo's existing `cert-manager`
+  Application. The overlay includes only
+  `common/cert-manager/overlays/kubeflow` (the `kubeflow-self-signing-issuer`
+  ClusterIssuer plus two NetworkPolicies); the cert-manager controller itself
+  is **not** re-installed.
+- **KServe is reused** from `system-apps/kserve/`; the distribution's own
+  KServe and KServe-UI overlays are excluded.
+- **Knative, Katib, Notebooks, Spark, and Workspaces are excluded** — not
+  requested. KServe here runs in `Standard` (non-Knative) mode, so Knative is
+  not required.
+
+The repo's older standalone Istio Helm Applications
+(`system-apps/istio/istio-base.yaml`, `istio-d.yaml`) remain commented out; the
+distribution installs its own kustomize-based Istio instead.
+
+### Sync behaviour
+
+The Application uses `ServerSideApply=true` (several Kubeflow CRDs exceed the
+client-side apply annotation limit), `SkipDryRunOnMissingResource=true` (custom
+resources render before their CRDs are established on the first sync), and a
+generous retry (`limit: 20`) because the platform's CRDs and webhooks become
+ready asynchronously. Expect the first sync to take several minutes and to
+retry a few times before converging.
+
+### Access and credentials
+
+The dashboard sits behind Dex with the default demo credentials
+(`user@example.com` / `12341234`). **Change these before exposing the dashboard,
+and do not expose it publicly with the defaults.** For a practice cluster,
+reach the dashboard by port-forwarding the Istio ingress gateway:
+
+```sh
+kubectl port-forward -n istio-system svc/istio-ingressgateway 8080:80
+# then open http://localhost:8080 and log in via Dex
+```
+
+Verify the platform after syncing:
+
+```sh
+kubectl get pods -n kubeflow
+kubectl get pods -n istio-system
+kubectl get pods -n auth            # Dex
+kubectl get pods -n oauth2-proxy
+kubectl get pods -n kubeflow-system # Trainer / JobSet controllers
+kubectl rollout status deployment/centraldashboard -n kubeflow
+kubectl rollout status deployment/ml-pipeline-ui -n kubeflow
 ```

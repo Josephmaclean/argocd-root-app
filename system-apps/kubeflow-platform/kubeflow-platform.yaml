@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubeflow-platform
+  namespace: argocd
+  annotations:
+    # After cert-manager (wave 0), whose ClusterIssuer the platform depends on.
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  project: default
+  source:
+    # In-repo kustomization that references the Kubeflow Community Distribution
+    # (kubeflow/manifests) remote bases pinned to tag 26.03.1. Argo CD renders
+    # the kustomization and fetches the remote bases. This installs the Central
+    # Dashboard (unified UI), Pipelines (+ UI), Trainer v2, Model Registry +
+    # Catalog, and the required platform (Istio, Dex, OAuth2-Proxy, Kubeflow
+    # namespace/roles/istio-resources, user namespace). cert-manager is reused
+    # from this repo's existing cert-manager Application.
+    repoURL: https://github.com/Josephmaclean/argocd-root-app
+    targetRevision: HEAD
+    path: resources/kubeflow-platform
+  destination:
+    server: https://kubernetes.default.svc
+    # Resources carry their own namespaces (kubeflow, istio-system, auth,
+    # oauth2-proxy, kubeflow-system, kubeflow-user-example-com). This is the
+    # default for anything unscoped.
+    namespace: kubeflow
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      # The platform has many CRDs, webhooks, and cross-component references
+      # that become ready asynchronously; retry generously on the first sync.
+      limit: 20
+      backoff:
+        duration: 15s
+        factor: 2
+        maxDuration: 5m
+    syncOptions:
+      - CreateNamespace=true
+      # Required: several Kubeflow CRDs exceed the client-side apply annotation
+      # size limit and must use server-side apply.
+      - ServerSideApply=true
+      # Custom resources (e.g. Certificates, Istio configs, Profiles) render
+      # before their CRDs are established on the first sync.
+      - SkipDryRunOnMissingResource=true
+      # The distribution sets its own labels; avoid Argo pruning churn on
+      # shared/aggregated cluster roles during reconciliation.
+      - ApplyOutOfSyncOnly=true
