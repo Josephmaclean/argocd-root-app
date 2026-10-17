@@ -1,0 +1,88 @@
+# Trim the Central Dashboard menu to only the components this overlay actually
+# installs. The upstream dashboard-config ships menu links for Notebooks
+# (/jupyter/), TensorBoards, Volumes, Katib, and KServe Endpoints — none of
+# which are installed here — producing "Sorry, /<x>/ is not a valid page"
+# errors in the dashboard. We replace the links payload with Model Registry and
+# Pipelines, the two component UIs present in this install.
+#
+# NOTE: the whole `links` value is a single JSON string, so it must be replaced
+# wholesale (ConfigMap data values cannot be deep-merged key-by-key).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dashboard-config
+  namespace: kubeflow
+data:
+  links: |-
+    {
+        "menuLinks": [
+            {
+                "icon": "assignment",
+                "link": "/model-registry/",
+                "text": "Model Registry",
+                "type": "item"
+            },
+            {
+                "icon": "kubeflow:pipeline-centered",
+                "items": [
+                    {
+                        "link": "/pipeline/#/pipelines",
+                        "text": "Pipelines",
+                        "type": "item"
+                    },
+                    {
+                        "link": "/pipeline/#/experiments",
+                        "text": "Experiments",
+                        "type": "item"
+                    },
+                    {
+                        "link": "/pipeline/#/runs",
+                        "text": "Runs",
+                        "type": "item"
+                    },
+                    {
+                        "link": "/pipeline/#/recurringruns",
+                        "text": "Recurring Runs",
+                        "type": "item"
+                    },
+                    {
+                        "link": "/pipeline/#/artifacts",
+                        "text": "Artifacts",
+                        "type": "item"
+                    },
+                    {
+                        "link": "/pipeline/#/executions",
+                        "text": "Executions",
+                        "type": "item"
+                    }
+                ],
+                "text": "Pipelines",
+                "type": "section"
+            }
+        ],
+        "externalLinks": [],
+        "documentationItems": [
+            {
+                "desc": "The Kubeflow website",
+                "link": "https://www.kubeflow.org/",
+                "text": "Kubeflow Website"
+            },
+            {
+                "desc": "Documentation for Kubeflow Pipelines",
+                "link": "https://www.kubeflow.org/docs/components/pipelines/",
+                "text": "Kubeflow Pipelines Documentation"
+            }
+        ],
+        "quickLinks": [
+            {
+                "desc": "Kubeflow Pipelines",
+                "link": "/pipeline/#/pipelines",
+                "text": "Upload a Pipeline"
+            },
+            {
+                "desc": "Pipelines",
+                "link": "/pipeline/#/runs",
+                "text": "View Pipeline Runs"
+            }
+        ]
+    }

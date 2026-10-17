@@ -94,3 +94,14 @@ resources:
 
   # --- Default user profile namespace (kubeflow-user-example-com) ---
   - https://github.com/kubeflow/manifests//common/user-namespace/base?ref=26.03.1
+
+# Trim the Central Dashboard menu to only the installed component UIs
+# (Model Registry + Pipelines). Without this, the dashboard shows menu links
+# for Notebooks, TensorBoards, Volumes, Katib, and KServe Endpoints — none of
+# which are installed here — which render as "not a valid page".
+patches:
+  - path: patches/dashboard-menu.yaml
+    target:
+      kind: ConfigMap
+      name: dashboard-config
+      namespace: kubeflow
